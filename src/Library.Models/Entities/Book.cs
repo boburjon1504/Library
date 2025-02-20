@@ -11,4 +11,6 @@ public class Book : Entity
     public string Author { get; set; } = default!;
 
     public int ViewsCount { get; set; }
+
+    public bool IsDeleted { get; set; }
 }
