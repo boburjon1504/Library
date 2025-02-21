@@ -6,6 +6,7 @@ public static partial class HostConfiguration
     {
         builder
             .AddDbContext()
+            .AddServices()
             .AddExposers()
             .AddDevTools();
 

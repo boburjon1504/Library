@@ -1,8 +1,12 @@
-﻿namespace Library.Models.Common.ForEntity;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+
+namespace Library.Models.Common.ForEntity;
 
 public class PaginationModel
 {
-    public int CurrentPage { get; set; }
+    public int CurrentPage { get; set; } = 1;
 
-    public int PageSize { get; }
+    [JsonIgnore]
+    public const int PageSize = 10;
 }

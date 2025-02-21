@@ -2,15 +2,9 @@
 
 public class FilterModel
 {
-    public bool IsAscending { get; set; }
+    public int MaxYear { get; set; } = 9999;
 
-    public string? Author { get; set; }
-
-    public string? Title { get; set; }
-
-    public int MaxYear { get; set; }
-
-    public int MinYear { get; set; }
+    public int MinYear { get; set; } = 0;
 
     public bool IncludeDeletedBooks { get; set; }
 }

@@ -1,6 +1,11 @@
 ﻿using Library.DataAccess.DataContext;
+using Library.DataAccess.Repositories;
+using Library.DataAccess.Repositories.Interfaces;
+using Library.DataAccess.Services;
+using Library.DataAccess.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore;
+using System.Text.Json.Serialization;
 namespace Library.API.Extensions;
 
 public static partial class HostConfiguration
@@ -10,7 +15,9 @@ public static partial class HostConfiguration
         builder
             .Services
             .AddRouting(o => o.LowercaseQueryStrings = true)
-            .AddControllers();
+            .AddControllers()
+            .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter())); ;
 
         return builder;
     }
@@ -36,6 +43,16 @@ public static partial class HostConfiguration
         return builder;
     }
 
+    public static WebApplicationBuilder AddServices(this WebApplicationBuilder builder)
+    {
+        builder
+            .Services
+            .AddScoped<IBookRepository, BookRepository>()
+            .AddScoped<IBookServie, BookService>();
+
+
+        return builder;
+    }
     public static WebApplication UseExposers(this WebApplication app)
     {
         app

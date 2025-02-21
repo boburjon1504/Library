@@ -13,17 +13,23 @@ public class BookRepository(AppDbContext dbContext) : IBookRepository
 {
     public IQueryable<Book> Get(Expression<Func<Book, bool>> expression = default!)
     {
-        return dbContext.Books.Where(expression).AsQueryable();
+        return expression is null ? dbContext.Books.AsQueryable() :  dbContext.Books.Where(expression).AsQueryable();
     }
 
-    public async ValueTask<IList<string>> GetAsync(FilterModel filterModel, BookSortingModel sortingModel,PaginationModel paginationModel)
+    public async ValueTask<IList<string>> GetAsync(FilterModel filterModel, BookSortingModel sortingModel,
+        PaginationModel paginationModel, CancellationToken cancellationToken = default)
     {
         return await Get()
                                        .ApplyFiltering(filterModel)
                                        .ApplySorting(sortingModel)
                                        .ApplyPagination(paginationModel)
                                        .Select(b => b.Title)
-                                       .ToListAsync();
+                                       .ToListAsync(cancellationToken);
+    }
+
+    public async ValueTask<Book?> GetByTitleAsync(string title, CancellationToken cancellationToken = default)
+    {
+        return await Get(b => b.Title.Equals(title)).FirstOrDefaultAsync(cancellationToken);
     }
 
     public async ValueTask<Book> CreateAsync(Book book, CancellationToken cancellationToken = default)
@@ -47,7 +53,6 @@ public class BookRepository(AppDbContext dbContext) : IBookRepository
     public async ValueTask<Book> DeleteAsync(Book book, CancellationToken cancellationToken = default)
     {
         book.IsDeleted = true;
-        dbContext.Books.Remove(book);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
@@ -61,8 +66,4 @@ public class BookRepository(AppDbContext dbContext) : IBookRepository
             .ExecuteUpdateAsync(x => x.SetProperty(b => b.IsDeleted, true), cancellationToken);
     }
 
-    public async ValueTask<Book?> GetByTitle(string title, CancellationToken cancellationToken = default)
-    {
-        return await Get(b => b.Title.Equals(title)).FirstOrDefaultAsync(cancellationToken);
-    }
 }

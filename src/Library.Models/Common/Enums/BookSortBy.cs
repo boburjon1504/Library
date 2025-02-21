@@ -3,6 +3,7 @@
 public enum BookSortBy
 {
     Default,
+    Popularity,
     Title,
     PublishedYear,
     Author,
