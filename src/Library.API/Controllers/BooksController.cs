@@ -8,6 +8,7 @@ using Library.Models.Common.ForEntity;
 using Library.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 
 namespace Library.API.Controllers
 {
@@ -47,6 +48,13 @@ namespace Library.API.Controllers
         [HttpPost("book")]
         public async ValueTask<IActionResult> Create([FromBody] BookDTO bookDTO)
         {
+            var foundBook = await bookService
+                                                    .GetByTitleAsync(bookDTO.Title, HttpContext.RequestAborted)
+                                                    .GetResultAsync();
+
+            if (foundBook.IsSuccess)
+                return Conflict($"Book is already exist with title - {bookDTO.Title}");
+
             var userId = requestUserContext.GetRequestUserId();
 
             var book = mapper.Map<Book>(bookDTO);

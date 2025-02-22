@@ -37,12 +37,6 @@ public class BookService(IBookRepository repository, IValidator<Book> validator)
 
     public async ValueTask<Book> CreateAsync(Book book, CancellationToken cancellationToken = default)
     {
-
-        var result = await GetByTitleAsync(book.Title, cancellationToken).GetResultAsync();
-
-        if (result.IsSuccess)
-            throw new ArgumentException($"Book is already exist with title - {book.Title}");
-
         await validator.ValidateAndThrowAsync(book);
 
         return await repository.CreateAsync(book, cancellationToken);
