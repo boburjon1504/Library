@@ -67,7 +67,7 @@ namespace Library.API.Controllers
 
             if (!exist.IsSuccess)
             {
-                return BadRequest(exist.ErrorMessage);
+                return NotFound(exist.ErrorMessage);
             }
             var book = mapper.Map(bookDTO, exist.Data);
             
