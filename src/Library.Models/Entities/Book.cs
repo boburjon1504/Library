@@ -2,7 +2,7 @@
 
 namespace Library.Models.Entities;
 
-public class Book : Entity
+public class Book : Auditable
 {
     public string Title { get; set; } = default!;
 
@@ -12,5 +12,5 @@ public class Book : Entity
 
     public int ViewsCount { get; set; }
 
-    public bool IsDeleted { get; set; }
+    public Guid UserId { get; set; }
 }

@@ -19,5 +19,5 @@ public interface IBookRepository
 
     ValueTask<Book> DeleteAsync(Book book, CancellationToken cancellationToken = default);
 
-    ValueTask<int> BulkDeleteAsync(IList<Guid> ids, CancellationToken cancellationToken = default);
+    ValueTask<int> BulkDeleteAsync(IList<string> titles, CancellationToken cancellationToken = default);
 }

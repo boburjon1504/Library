@@ -7,6 +7,7 @@ public static partial class HostConfiguration
         builder
             .AddDbContext()
             .AddServices()
+            .AddAuth()
             .AddExposers()
             .AddDevTools();
 
@@ -17,6 +18,7 @@ public static partial class HostConfiguration
     {
         app
             .UseDevTools()
+            .UseAuth()
             .UseExposers();
 
         return new ValueTask<WebApplication> (app);

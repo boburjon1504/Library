@@ -17,9 +17,12 @@ public class BookService(IBookRepository repository) : IBookServie
         return repository.GetAsync(filterModel, sortingModel, paginationModel, cancellationToken);
     }
 
-    public ValueTask<Book?> GetByTitleAsync(string title, CancellationToken cancellationToken = default)
+    public async ValueTask<Book?> GetByTitleAsync(string title, CancellationToken cancellationToken = default)
     {
-        return repository.GetByTitleAsync(title, cancellationToken);
+        var book = await repository.GetByTitleAsync(title, cancellationToken) ?? 
+                                                        throw new ArgumentNullException(nameof(title), $"There is no book with title - {title}");
+
+        return book;
     }
 
     public ValueTask<Book> CreateAsync(Book book, CancellationToken cancellationToken = default)
