@@ -40,7 +40,7 @@ namespace Library.API.Controllers
 
             await bookService.UpdateAsync(book, HttpContext.RequestAborted);
 
-            return result.IsSuccess ?  Ok(result.Data) : BadRequest(result.ErrorMessage);
+            return result.IsSuccess ?  Ok(result.Data) : NotFound(result.ErrorMessage);
         }
 
         [Authorize]
@@ -89,7 +89,7 @@ namespace Library.API.Controllers
                 return BadRequest("Only admin or book's owner can delete that book");
             }
 
-            return result.IsSuccess ? Ok(result.Data) : BadRequest(result.ErrorMessage);
+            return result.IsSuccess ? Ok(result.Data) : NotFound(result.ErrorMessage);
         }
 
         [Authorize(Roles = nameof(Role.Admin))]
@@ -98,7 +98,7 @@ namespace Library.API.Controllers
         {
             var result = await bookService.BulkDeleteAsync(ids, HttpContext.RequestAborted);
 
-            return result > 0 ? Ok(result) : BadRequest(result);
+            return result > 0 ? Ok(result) : NotFound(result);
         }
     }
 }

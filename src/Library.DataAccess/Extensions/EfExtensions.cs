@@ -38,13 +38,12 @@ public static class EfExtensions
 
             order = sortingModel.IsAscending ? order.OrderBy(expression): 
                                                order.OrderByDescending(expression);
-        }
-        
-        if(sortingModel.SortBy != BookSortBy.Default)
+        }else
+        if (sortingModel.SortBy != BookSortBy.Default)
         {
             Expression<Func<Book, double>> expression = (book) => book.ViewsCount * 0.5 + (DateTime.Now.Year - book.PublishedYear) * 2;
-            order = sortingModel.IsAscending ? 
-                                        order.OrderBy(b => EF.Property<Book>(b, sortingModel.SortBy.ToString())) : 
+            order = sortingModel.IsAscending ?
+                                        order.OrderBy(b => EF.Property<Book>(b, sortingModel.SortBy.ToString())) :
                                         order.OrderByDescending(b => EF.Property<Book>(b, sortingModel.SortBy.ToString()));
         }
 
