@@ -93,10 +93,19 @@ namespace Library.API.Controllers
         }
 
         [Authorize(Roles = nameof(Role.Admin))]
-        [HttpDelete]
+        [HttpDelete("by-ids")]
         public async ValueTask<IActionResult> BulkDelete(IList<Guid> ids)
         {
             var result = await bookService.BulkDeleteAsync(ids, HttpContext.RequestAborted);
+
+            return result > 0 ? Ok(result) : NotFound(result);
+        }
+
+        [Authorize]
+        [HttpDelete("by-titles")]
+        public async ValueTask<IActionResult> BulkDelete(IList<string> titles)
+        {
+            var result = await bookService.BulkDeleteAsync(titles, HttpContext.RequestAborted);
 
             return result > 0 ? Ok(result) : NotFound(result);
         }
