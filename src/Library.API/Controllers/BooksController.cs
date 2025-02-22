@@ -56,7 +56,7 @@ namespace Library.API.Controllers
                                                     .CreateAsync(book, HttpContext.RequestAborted)
                                                     .GetResultAsync();
 
-            return result.IsSuccess ? CreatedAtAction(nameof(Create),result.Data) : BadRequest(result.ErrorMessage);
+            return result.IsSuccess ? CreatedAtAction(nameof(Create),result.Data) : UnprocessableEntity(result.ErrorMessage);
         }
 
         [Authorize]
@@ -73,7 +73,7 @@ namespace Library.API.Controllers
             
             var result = await bookService.UpdateAsync(book).GetResultAsync();
 
-            return result.IsSuccess ? Ok(book) : BadRequest(result.ErrorMessage);
+            return result.IsSuccess ? Ok(book) : UnprocessableEntity(result.ErrorMessage);
         }
 
         [Authorize]
