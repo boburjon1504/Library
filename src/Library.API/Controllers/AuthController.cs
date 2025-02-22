@@ -19,7 +19,7 @@ namespace Library.API.Controllers
 
             var result = await authService.RegisterAsync(user, HttpContext.RequestAborted).GetResultAsync();
 
-            return result.IsSuccess ? Ok(result.Data) : BadRequest(result.ErrorMessage);
+            return result.IsSuccess ? Ok(result.Data) : Conflict(result.ErrorMessage);
         }
 
         [HttpPost("login")]

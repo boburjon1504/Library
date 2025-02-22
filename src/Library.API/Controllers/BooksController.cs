@@ -86,7 +86,7 @@ namespace Library.API.Controllers
             
             if(result.IsSuccess && userId != result.Data!.UserId)
             {
-                return BadRequest("Only admin or book's owner can delete that book");
+                return Unauthorized("Only admin or book's owner can delete that book");
             }
 
             return result.IsSuccess ? Ok(result.Data) : NotFound(result.ErrorMessage);

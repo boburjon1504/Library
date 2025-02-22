@@ -1,7 +1,5 @@
 ﻿using Library.API.Extensions;
 using Library.API.Services.Interfaces;
-using Library.DataAccess.Extensions;
-using Library.Models.Common;
 using Library.Models.Entities;
 
 namespace Library.API.Services;
@@ -11,7 +9,7 @@ public class AuthService(
     ITokenGeneratorService tokenGenerator,
     IPasswordHasher passwordHasher) : IAuthService
 {
-    public async ValueTask<bool> RegisterAsync(User user, CancellationToken cancellationToken = default)
+    public async ValueTask<User> RegisterAsync(User user, CancellationToken cancellationToken = default)
     {
         var foundUser = await userService.GetByUsernameAsync(user.Username).GetResultAsync();
 
@@ -22,7 +20,7 @@ public class AuthService(
 
         var result = await userService.CreateAsync(user, cancellationToken);
 
-        return result is not null;
+        return result;
     }
 
     public async ValueTask<string> LoginAsync(User user, CancellationToken cancellationToken = default)
