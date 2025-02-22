@@ -90,14 +90,9 @@ dotnet run
 To get books sorted by `Title` in **descending order**:
 
 ```sh
-GET /books?sortBy=Title&order=desc
+GET /books?MaxYear=0&MinYear=9000&IncludeDeletedBooks=true&SortBy=Popularity&IsAscending=true&CurrentPage=1
 ```
 
-To filter books published between **2000 and 2020**:
-
-```sh
-GET /books?minYear=2000&maxYear=2020
-```
 
 ## 🤝 Contribution
 
