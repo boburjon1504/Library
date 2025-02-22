@@ -1,15 +1,18 @@
-﻿using Library.DataAccess.DataContext;
+﻿using Library.API.Services;
+using Library.API.Services.Interfaces;
+using Library.DataAccess.DataContext;
 using Library.DataAccess.Repositories;
 using Library.DataAccess.Repositories.Interfaces;
-using Library.DataAccess.Services;
-using Library.DataAccess.Services.Interfaces;
 using Library.Models.Common.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Swashbuckle.AspNetCore;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
+using FluentValidation.AspNetCore;
+using FluentValidation;
 namespace Library.API.Extensions;
 
 public static partial class HostConfiguration
@@ -68,10 +71,39 @@ public static partial class HostConfiguration
 
     static WebApplicationBuilder AddDevTools(this WebApplicationBuilder builder)
     {
+        var assemblies = Assembly.GetExecutingAssembly().GetReferencedAssemblies().Select(Assembly.Load).ToList();
+        assemblies.Add(Assembly.GetExecutingAssembly());
+
         builder
             .Services
+            .AddAutoMapper(assemblies)
+            .AddValidatorsFromAssemblies(assemblies)
+            .AddFluentValidationAutoValidation()
+            .AddFluentValidationClientsideAdapters()
             .AddEndpointsApiExplorer()
-            .AddSwaggerGen();
+            .AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Bearer {token}",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] { }
+                }});
+            });
 
         return builder;
     }
@@ -85,7 +117,9 @@ public static partial class HostConfiguration
             .AddScoped<IUserRepository, UserRepository>()
             .AddScoped<IUserService, UserService>()
             .AddScoped<ITokenGeneratorService, TokenGeneratorService>()
-            .AddScoped<IAuthService, AuthService>();
+            .AddScoped<IPasswordHasher, PasswordHasher>()
+            .AddScoped<IAuthService, AuthService>()
+            .AddScoped<IRequestUserContext, RequestUserContext>();
 
 
 

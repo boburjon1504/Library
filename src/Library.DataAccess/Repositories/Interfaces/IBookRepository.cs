@@ -11,6 +11,8 @@ public interface IBookRepository
 
     ValueTask<IList<string>> GetAsync(FilterModel filterModel, BookSortingModel sortingModel, PaginationModel paginationModel, CancellationToken cancellationToken = default);
 
+    ValueTask<Book?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+
     ValueTask<Book?> GetByTitleAsync(string title, CancellationToken cancellationToken = default);
 
     ValueTask<Book> CreateAsync(Book book, CancellationToken cancellationToken = default);
@@ -19,5 +21,8 @@ public interface IBookRepository
 
     ValueTask<Book> DeleteAsync(Book book, CancellationToken cancellationToken = default);
 
+    ValueTask<int> BulkDeleteAsync(IList<Guid> ids, CancellationToken cancellationToken = default);
+
     ValueTask<int> BulkDeleteAsync(IList<string> titles, CancellationToken cancellationToken = default);
+
 }

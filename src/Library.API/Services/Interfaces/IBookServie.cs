@@ -3,15 +3,18 @@ using Library.Models.Common;
 using Library.Models.Entities;
 using System.Linq.Expressions;
 
-namespace Library.DataAccess.Services.Interfaces;
+namespace Library.API.Services.Interfaces;
 
 public interface IBookServie
 {
     IQueryable<Book> Get(Expression<Func<Book, bool>> expression);
 
-    ValueTask<IList<string>> GetAsync(FilterModel filterModel, BookSortingModel sortingModel, PaginationModel paginationModel, CancellationToken cancellationToken = default);
+    ValueTask<IList<string>> GetAsync(FilterModel filterModel, BookSortingModel sortingModel, 
+        PaginationModel paginationModel, CancellationToken cancellationToken = default);
 
-    ValueTask<Book?> GetByTitleAsync(string title, CancellationToken cancellationToken = default);
+    ValueTask<Book> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+
+    ValueTask<Book> GetByTitleAsync(string title, CancellationToken cancellationToken = default);
 
     ValueTask<Book> CreateAsync(Book book, CancellationToken cancellationToken = default);
 
@@ -20,4 +23,7 @@ public interface IBookServie
     ValueTask<Book> DeleteAsync(string title, CancellationToken cancellationToken = default);
 
     ValueTask<int> BulkDeleteAsync(IList<Guid> ids, CancellationToken cancellationToken = default);
+
+    ValueTask<int> BulkDeleteAsync(IList<string> titles, CancellationToken cancellationToken = default);
+
 }

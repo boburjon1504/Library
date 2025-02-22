@@ -26,6 +26,10 @@ public class BookRepository(AppDbContext dbContext) : BaseRepository<Book>(dbCon
                                        .Select(b => b.Title)
                                        .ToListAsync(cancellationToken);
     }
+    public new ValueTask<Book?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return base.GetByIdAsync(id, cancellationToken);
+    }
 
     public async ValueTask<Book?> GetByTitleAsync(string title, CancellationToken cancellationToken = default)
     {
@@ -47,11 +51,14 @@ public class BookRepository(AppDbContext dbContext) : BaseRepository<Book>(dbCon
         return base.DeleteAsync(book, cancellationToken);
     }
 
-    public async ValueTask<int> BulkDeleteAsync(IList<string> titles, CancellationToken cancellationToken = default)
+    public new ValueTask<int> BulkDeleteAsync(IList<Guid> ids, CancellationToken cancellationToken = default)
     {
-        return await Get()
-            .Where(b => titles.Any(t => t == b.Title))
-            .ExecuteUpdateAsync(x => x.SetProperty(b => b.IsDeleted, true), cancellationToken);
+        return base.BulkDeleteAsync(ids, cancellationToken);
     }
 
+    public async ValueTask<int> BulkDeleteAsync(IList<string> titles, CancellationToken cancellationToken = default)
+    {
+        return await Get(x => titles.Any(t => x.Title.Equals(t)))
+           .ExecuteUpdateAsync(book => book.SetProperty(b => b.IsDeleted, true), cancellationToken);
+    }
 }

@@ -1,8 +1,6 @@
 ﻿using Library.Models.Common;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 
-namespace Library.DataAccess.Extensions;
+namespace Library.API.Extensions;
 
 public static class FuncResult
 {

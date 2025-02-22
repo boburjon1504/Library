@@ -13,6 +13,10 @@ public abstract class BaseRepository<TEntity>(AppDbContext dbContext) where TEnt
         return expression is null ? dbSet.AsQueryable() : dbSet.Where(expression).AsQueryable();
     }
 
+    protected ValueTask<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return dbSet.FindAsync(id, cancellationToken);
+    }
     protected async ValueTask<TEntity> CreateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         var created = await dbSet.AddAsync(entity, cancellationToken);
@@ -38,5 +42,10 @@ public abstract class BaseRepository<TEntity>(AppDbContext dbContext) where TEnt
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return entity;
+    }
+    public async ValueTask<int> BulkDeleteAsync(IList<Guid> ids, CancellationToken cancellationToken = default)
+    {
+        return await Get(e => ids.Any(id => id == e.Id))
+            .ExecuteUpdateAsync(x => x.SetProperty(b => b.IsDeleted, true), cancellationToken);
     }
 }

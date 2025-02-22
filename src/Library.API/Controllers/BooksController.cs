@@ -1,15 +1,19 @@
-﻿using Library.DataAccess.Extensions;
-using Library.DataAccess.Services.Interfaces;
+﻿using AutoMapper;
+using Library.API.DTOs.Book;
+using Library.API.Extensions;
+using Library.API.Services.Interfaces;
 using Library.Models.Common;
+using Library.Models.Common.Enums;
 using Library.Models.Common.ForEntity;
 using Library.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Library.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BooksController(IBookServie bookService) : ControllerBase
+    public class BooksController(IBookServie bookService, IMapper mapper, IRequestUserContext requestUserContext) : ControllerBase
     {
         [HttpGet]
         public async ValueTask<IActionResult> Get(
@@ -31,13 +35,23 @@ namespace Library.API.Controllers
             var result = await bookService
                                                     .GetByTitleAsync(title, HttpContext.RequestAborted)
                                                     .GetResultAsync();
+            var book = result.Data;
+            book.ViewsCount++;
+
+            await bookService.UpdateAsync(book, HttpContext.RequestAborted);
 
             return result.IsSuccess ?  Ok(result.Data) : BadRequest(result.ErrorMessage);
         }
 
+        [Authorize]
         [HttpPost("book")]
-        public async ValueTask<IActionResult> Create([FromBody] Book book)
+        public async ValueTask<IActionResult> Create([FromBody] BookDTO bookDTO)
         {
+            var userId = requestUserContext.GetRequestUserId();
+
+            var book = mapper.Map<Book>(bookDTO);
+            book.UserId = userId;
+
             var result = await bookService
                                                     .CreateAsync(book, HttpContext.RequestAborted)
                                                     .GetResultAsync();
@@ -45,12 +59,46 @@ namespace Library.API.Controllers
             return result.IsSuccess ? CreatedAtAction(nameof(Create),result.Data) : BadRequest(result.ErrorMessage);
         }
 
+        [Authorize]
+        [HttpPut("book/{id:guid}")]
+        public async ValueTask<IActionResult> Update(Guid id, [FromBody] BookDTO bookDTO)
+        {
+            var exist = await bookService.GetByIdAsync(id, HttpContext.RequestAborted).GetResultAsync();
+
+            if (!exist.IsSuccess)
+            {
+                return BadRequest(exist.ErrorMessage);
+            }
+            var book = mapper.Map(bookDTO, exist.Data);
+            
+            var result = await bookService.UpdateAsync(book).GetResultAsync();
+
+            return result.IsSuccess ? Ok(book) : BadRequest(result.ErrorMessage);
+        }
+
+        [Authorize]
         [HttpDelete("book/{title}")]
         public async ValueTask<IActionResult> Delete(string title)
         {
+            var userId = requestUserContext.GetRequestUserId();
+
             var result = await bookService.DeleteAsync(title, HttpContext.RequestAborted).GetResultAsync();
+            
+            if(result.IsSuccess && userId != result.Data!.UserId)
+            {
+                return BadRequest("Only admin or book's owner can delete that book");
+            }
 
             return result.IsSuccess ? Ok(result.Data) : BadRequest(result.ErrorMessage);
+        }
+
+        [Authorize(Roles = nameof(Role.Admin))]
+        [HttpDelete]
+        public async ValueTask<IActionResult> BulkDelete(IList<Guid> ids)
+        {
+            var result = await bookService.BulkDeleteAsync(ids, HttpContext.RequestAborted);
+
+            return result > 0 ? Ok(result) : BadRequest(result);
         }
     }
 }

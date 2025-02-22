@@ -1,11 +1,10 @@
-﻿using Library.DataAccess.Repositories.Interfaces;
+﻿using Library.DataAccess.DataContext;
+using Library.DataAccess.Extensions;
+using Library.DataAccess.Repositories.Interfaces;
 using Library.Models.Common.ForEntity;
-using Library.Models.Common;
 using Library.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using Library.DataAccess.DataContext;
-using Library.DataAccess.Extensions;
 namespace Library.DataAccess.Repositories;
 
 public class UserRepository(AppDbContext dbContext) : BaseRepository<User>(dbContext), IUserRepository
@@ -21,6 +20,11 @@ public class UserRepository(AppDbContext dbContext) : BaseRepository<User>(dbCon
                            .ApplyPagination(paginationModel)
                            .Select(b => b.Username)
                            .ToListAsync(cancellationToken);
+    }
+
+    public new ValueTask<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return base.GetByIdAsync(id, cancellationToken);
     }
 
     public async ValueTask<User?> GetByUsernameAsync(string username, CancellationToken cancellationToken = default)
@@ -43,10 +47,8 @@ public class UserRepository(AppDbContext dbContext) : BaseRepository<User>(dbCon
         return base.DeleteAsync(book, cancellationToken);
     }
 
-    public async ValueTask<int> BulkDeleteAsync(IList<string> usernames, CancellationToken cancellationToken = default)
+    public new ValueTask<int> BulkDeleteAsync(IList<Guid> ids, CancellationToken cancellationToken = default)
     {
-        return await Get()
-            .Where(user => usernames.Any(u => u == user.Username))
-            .ExecuteUpdateAsync(x => x.SetProperty(b => b.IsDeleted, true), cancellationToken);
+        return base.BulkDeleteAsync(ids, cancellationToken);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Library.Models.Entities;
 
-namespace Library.DataAccess.Services.Interfaces;
+namespace Library.API.Services.Interfaces;
 
 public interface ITokenGeneratorService
 {

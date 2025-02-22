@@ -2,9 +2,9 @@
 
 public class ResultModel<T>
 {
-    public T? Data { get; set; }
+    public T Data { get; set; } = default!;
 
-    public string? ErrorMessage { get; set; }
+    public string ErrorMessage { get; set; } = default!;
     public bool IsSuccess => Data is not null;
     public ResultModel(T data) => Data = data;
 

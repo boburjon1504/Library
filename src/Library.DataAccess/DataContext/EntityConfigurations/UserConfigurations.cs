@@ -13,7 +13,7 @@ class UserConfigurations : IEntityTypeConfiguration<User>
             .IsUnique();
 
         builder
-            .HasMany<Book>()
+            .HasMany(u => u.Books)
             .WithOne()
             .HasForeignKey(b => b.UserId);
     }

@@ -1,4 +1,4 @@
-﻿using Library.DataAccess.Services.Interfaces;
+﻿using Library.API.Services.Interfaces;
 using Library.Models.Common.Settings;
 using Library.Models.Entities;
 using Microsoft.Extensions.Options;
@@ -7,7 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Library.DataAccess.Services;
+namespace Library.API.Services;
 
 public class TokenGeneratorService(IOptions<JwtSettings> jwtSettings) : ITokenGeneratorService
 {
@@ -41,7 +41,7 @@ public class TokenGeneratorService(IOptions<JwtSettings> jwtSettings) : ITokenGe
         return new List<Claim>()
         {
             new Claim(ClaimTypes.Role, user.Role.ToString()),
-            new Claim("Username", user.Username)
+            new Claim("UserId", user.Id.ToString())
         };
     }
 }
