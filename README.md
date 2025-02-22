@@ -8,7 +8,7 @@ The **Library Management API** is a book management system that provides full **
 
 - **User Authentication & Authorization** (Register, Login, JWT-based security)
 - **Book Management (CRUD)**
-  - Create, update, delete books (Admin users only)
+  - Create, update, delete books (Admins and authorized users only)
   - View books (All users)
 - **Filtering & Pagination**
   - Filter by year range (MinYear, MaxYear)
@@ -71,28 +71,19 @@ dotnet run
 
 ### 📚 Book Management
 
-| Method   | Endpoint         | Access | Description                    |
-| -------- | ---------------- | ------ | ------------------------------ |
-| `GET`    | `/books`         | Public | Get list of books with filters |
-| `GET`    | `/books/{title}` | Public | Get details of a single book   |
-| `POST`   | `/books`         | Admin  | Add a new book                 |
-| `PUT`    | `/books/{id}`    | Admin  | Update book details            |
-| `DELETE` | `/books/{title}` | Admin  | Delete a book                  |
+| Method   | Endpoint         | Access | Description                                                  |
+| -------- | ---------------- | ------ | -------------------------------------------------------------|
+| `GET`    | `/books`         | Public                   | Get list of books with filters ans sorting |
+| `GET`    | `/books/{title}` | Public                   | Get details of a single book               |
+| `POST`   | `/books/book`    | Admin & Authorized user  | Add a new book                             |
+| `PUT`    | `/books/{id}`    | Admin & Authorized user  | Update book details                        |  
+| `DELETE` | `/books/{title}` | Admin & Authorized user  | Delete a book                              |
 
 ## 🛡️ Authorization
 
 - JWT-based authentication is used.
 - Only **admin users** can **create, update, or delete books**.
 - All users can **view books**.
-
-## 📖 Sorting & Filtering Example
-
-To get books sorted by `Title` in **descending order**:
-
-```sh
-GET /books?MaxYear=0&MinYear=9000&IncludeDeletedBooks=true&SortBy=Popularity&IsAscending=true&CurrentPage=1
-```
-
 
 ## 🤝 Contribution
 
