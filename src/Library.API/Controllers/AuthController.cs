@@ -29,7 +29,7 @@ namespace Library.API.Controllers
 
             var result = await authService.LoginAsync(user, HttpContext.RequestAborted).GetResultAsync();
 
-            return result.IsSuccess ? Ok(result.Data) : BadRequest(result.ErrorMessage);
+            return result.IsSuccess ? Ok(result.Data) : NotFound(result.ErrorMessage);
         }
 
     }
