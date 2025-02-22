@@ -51,7 +51,7 @@ Update `appsettings.json` with your **SQL Server connection string**:
 Run migrations to set up the database:
 
 ```sh
-dotnet ef database update
+dotnet ef database update --startup-project ../Library.API
 ```
 
 ### 4️⃣ Run the Application
